@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 
 # load the data from the csv file and perform a train-test-split
 # TODO: this can be accomplished using the already imported pandas and sklearn.model_selection modules
-df = pd.read_csv('src_to_implement/data.csv',sep=';')
+df = pd.read_csv('data.csv',sep=';')
 data_train, data_valid = train_test_split(df, train_size = 0.75, test_size = 0.25)
 dataset_train = ChallengeDataset(data_train, mode='train')
 dataset_valid = ChallengeDataset(data_valid, mode='val')
@@ -24,7 +24,7 @@ model = model.ResNet()
 loss = t.nn.BCELoss()
 # set up the optimizer (see t.optim)
 learning_rate = 1e-4
-optimizer = t.optim.Adam(model.layers, lr = learning_rate)
+optimizer = t.optim.Adam(model.parameters(), lr = learning_rate)
 # TODO: create an object of type Trainer and set its early stopping criterion
 trainer = Trainer(model, loss, optimizer, dataset_train, dataset_valid, True, 5)
 # TODO: go, go, go... call fit on trainer

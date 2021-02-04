@@ -40,7 +40,6 @@ class ChallengeDataset(Dataset):
         if self._transform:
             img = self._transform(img)
 
-
-        return torch.tensor(img), torch.tensor(label)
+        return torch.tensor(img), torch.tensor(label, dtype=torch.float)
 
         

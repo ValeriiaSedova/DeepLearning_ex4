@@ -73,9 +73,10 @@ class Trainer:
         # [x] - predict
         # [x] - propagate through the network and calculate the loss and predictions
         # [x] - return the loss and the predictions
-        
+        x = x[None, :, :, :]
+        y = y[None,:]
         pred = self._model.forward(x)
-        loss = self._crit(x, y)
+        loss = self._crit(pred, y)
         return loss, pred
         
     def train_epoch(self):
@@ -89,6 +90,8 @@ class Trainer:
         self._model.train()
         losses = []
         for sample, label in self._train_dl:
+            sample = sample[None, :, :, :]
+            label = label[None, :]
             sample, label = sample.cuda(), label.cuda()
             loss = self.train_step(sample, label)
             losses.append(loss)
