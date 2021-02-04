@@ -16,7 +16,7 @@ dataset_train = ChallengeDataset(data_train, mode='train')
 dataset_valid = ChallengeDataset(data_valid, mode='val')
 # TODO: set up data loading for the training and validation set each using t.utils.data.DataLoader and ChallengeDataset objects
 data_loader = t.utils.data.DataLoader(  dataset_train,
-                                        batch_size = 32,
+                                        batch_size = 1,
                                         shuffle = True)
 # TODO: create an instance of our ResNet model
 model = model.ResNet()

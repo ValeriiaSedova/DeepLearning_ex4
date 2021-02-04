@@ -94,8 +94,8 @@ class Trainer:
             label = label[None, :]
             sample, label = sample.cuda(), label.cuda()
             loss = self.train_step(sample, label)
-            losses.append(loss)
-        return t.mean(t.tensor(losses))
+            losses.append(float(loss))
+        return float(t.mean(t.tensor(losses)))
 
     def val_test(self):
         # TODO:
@@ -114,8 +114,8 @@ class Trainer:
         for sample, label in self._val_test_dl:
             sample, label = sample.cuda(), label.cuda()
             loss, pred = self.val_test_step(sample, label)
-            losses.append(loss)
-        return t.mean(t.tensor(losses))
+            losses.append(float(loss))
+        return float(t.mean(t.tensor(losses)))
 
     def fit(self, epochs=-1):
         assert self._early_stopping_patience > 0 or epochs > 0
@@ -149,6 +149,7 @@ class Trainer:
                 break
 
             epoch += 1
+            print('epoch:',epoch)
         self.save_checkpoint(epoch)   
         return train_losses, validation_losses
         
