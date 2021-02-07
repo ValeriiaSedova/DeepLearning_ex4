@@ -3,7 +3,7 @@ from data import ChallengeDataset
 from trainer import Trainer
 from matplotlib import pyplot as plt
 import numpy as np
-import model
+from model import ResNet
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
@@ -15,16 +15,28 @@ data_train, data_valid = train_test_split(df, train_size = 0.75, test_size = 0.2
 dataset_train = ChallengeDataset(data_train, mode='train')
 dataset_valid = ChallengeDataset(data_valid, mode='val')
 # TODO: set up data loading for the training and validation set each using t.utils.data.DataLoader and ChallengeDataset objects
-data_loader = t.utils.data.DataLoader(  dataset_train,
-                                        batch_size = 1,
+bs = 20
+dataset_train = t.utils.data.DataLoader(dataset_train,
+                                        batch_size = bs,
+                                        shuffle = True)
+
+dataset_valid = t.utils.data.DataLoader(dataset_valid,
+                                        batch_size = bs,
                                         shuffle = True)
 # TODO: create an instance of our ResNet model
-model = model.ResNet()
+model = ResNet()
 # set up a suitable loss criterion (you can find a pre-implemented loss functions in t.nn)
+# 
 loss = t.nn.BCELoss()
+# loss = t.nn.BCEWithLogitsLoss() #-- too low output values, loss decreased too fast
+# loss = t.nn.MultiLabelSoftMarginLoss() # -- same shit
+# loss = t.nn.L1Loss()
+# loss = t.nn.BCEWithLogitsLoss()
+# loss = t.nn.NLLLoss()
+# loss = t.nn.CrossEntropyLoss()
 # set up the optimizer (see t.optim)
 learning_rate = 1e-4
-optimizer = t.optim.Adam(model.parameters(), lr = learning_rate)
+optimizer = t.optim.SGD(model.parameters(), lr = learning_rate)
 # TODO: create an object of type Trainer and set its early stopping criterion
 trainer = Trainer(model, loss, optimizer, dataset_train, dataset_valid, True, 5)
 # TODO: go, go, go... call fit on trainer

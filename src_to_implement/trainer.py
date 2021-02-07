@@ -1,8 +1,10 @@
 import torch as t
 from sklearn.metrics import f1_score
-from tqdm.autonotebook import tqdm
+# from tqdm.autonotebook import tqdm
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
+from colorama import Fore, Style
 
 class Trainer:
 
@@ -73,8 +75,8 @@ class Trainer:
         # [x] - predict
         # [x] - propagate through the network and calculate the loss and predictions
         # [x] - return the loss and the predictions
-        x = x[None, :, :, :]
-        y = y[None,:]
+        # x = x[None, :, :, :]
+        # y = y[None,:]
         pred = self._model.forward(x)
         loss = self._crit(pred, y)
         return loss, pred
@@ -89,12 +91,15 @@ class Trainer:
         
         self._model.train()
         losses = []
+        pbar = tqdm(total = len(self._train_dl))
         for sample, label in self._train_dl:
-            sample = sample[None, :, :, :]
-            label = label[None, :]
+            # sample = sample[None, :, :, :]
+            # label = label[None, :]
             sample, label = sample.cuda(), label.cuda()
             loss = self.train_step(sample, label)
             losses.append(float(loss))
+            pbar.update(1)
+        pbar.close()
         return float(t.mean(t.tensor(losses)))
 
     def val_test(self):
@@ -125,7 +130,7 @@ class Trainer:
         validation_losses = []
         epoch = 0
         epoch_cd = 0
-        prev_vl = 0
+        prev_vl = self.val_test()
         while True:
       
             # TODO:
@@ -138,18 +143,19 @@ class Trainer:
             
             train_loss = self.train_epoch()
             valid_loss = self.val_test()
-
-            if valid_loss > prev_vl: epoch_cd += 1
-            else:                    epoch_cd =  0
-
             train_losses.append(train_loss)
             validation_losses.append(valid_loss)   
+            print('\nEpoch:',epoch, 'Train_loss: {:.2f}'.format(train_loss), 'Val_loss: {:.2f}'.format(valid_loss))
+
+            if valid_loss > prev_vl: epoch_cd += 1; print(Fore.RED + f'Uvaga! {epoch_cd} / {self._early_stopping_patience}' + Style.RESET_ALL)
+            else:                    epoch_cd =  0; prev_vl = valid_loss
+
 
             if epoch_cd >= self._early_stopping_patience:
                 break
 
             epoch += 1
-            print('epoch:',epoch)
+
         self.save_checkpoint(epoch)   
         return train_losses, validation_losses
         
