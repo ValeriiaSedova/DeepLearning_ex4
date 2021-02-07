@@ -1,4 +1,5 @@
 import torch
+from torch._C import import_ir_module
 
 class ResNet(torch.nn.Module):
 
@@ -24,7 +25,6 @@ class ResNet(torch.nn.Module):
     def forward(self, input_tensor):
         x = input_tensor
         for layer in self.layers:
-            # print('net:', x.shape)
             x = layer.forward(x)
         return x
 
@@ -34,12 +34,16 @@ class ResBlock(torch.nn.Module):
 
     def __init__(self, input_channels, output_channels, stride):
         super().__init__()
-
+        self.identity_downsample = torch.nn.Sequential(
+            torch.nn.Conv2d(input_channels, output_channels, kernel_size=1, stride=stride),
+            torch.nn.BatchNorm2d(output_channels)
+        )
+        
         self.layers =[
-            torch.nn.Conv2d(input_channels, output_channels, kernel_size = 3, stride = stride),
+            torch.nn.Conv2d(input_channels, output_channels, kernel_size = 3, stride = stride, padding = 1),
             torch.nn.BatchNorm2d(output_channels),
             torch.nn.ReLU(),
-            torch.nn.Conv2d(output_channels, output_channels, kernel_size = 1),
+            torch.nn.Conv2d(output_channels, output_channels, kernel_size = 3, padding = 1),
             torch.nn.BatchNorm2d(output_channels),
             torch.nn.ReLU()]
 
@@ -47,9 +51,12 @@ class ResBlock(torch.nn.Module):
 
     def forward(self, input_tensor):
         x = input_tensor
-        for layer in self.layers:
-            # print('block:', x.shape)
+        for i, layer in enumerate(self.layers):
             x = layer.forward(x)
+            if i == 4:
+                if self.identity_downsample != None:
+                    input_tensor = self.identity_downsample(input_tensor)
+                x += input_tensor
         return x
     
         
