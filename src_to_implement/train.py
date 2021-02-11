@@ -15,7 +15,7 @@ data_train, data_valid = train_test_split(df, train_size = 0.75, test_size = 0.2
 dataset_train = ChallengeDataset(data_train, mode='train')
 dataset_valid = ChallengeDataset(data_valid, mode='val')
 # TODO: set up data loading for the training and validation set each using t.utils.data.DataLoader and ChallengeDataset objects
-bs = 20
+bs = 32
 dataset_train = t.utils.data.DataLoader(dataset_train,
                                         batch_size = bs,
                                         shuffle = True)
@@ -33,9 +33,10 @@ loss = t.nn.BCELoss()
 # loss = t.nn.L1Loss()
 # loss = t.nn.BCEWithLogitsLoss()
 # loss = t.nn.NLLLoss()
+# loss = t.nn.NLLLoss()
 # loss = t.nn.CrossEntropyLoss()
 # set up the optimizer (see t.optim)
-learning_rate = 1e-4
+learning_rate = 1e-3
 optimizer = t.optim.SGD(model.parameters(), lr = learning_rate)
 # TODO: create an object of type Trainer and set its early stopping criterion
 trainer = Trainer(model, loss, optimizer, dataset_train, dataset_valid, True, 5)

@@ -140,17 +140,19 @@ class Trainer:
             # [x] - use the save_checkpoint function to save the model (can be restricted to epochs with improvement)
             # [x] - check whether early stopping should be performed using the early stopping criterion and stop if so
             # [x] - return the losses for both training and validation
-            
             train_loss = self.train_epoch()
             valid_loss = self.val_test()
             train_losses.append(train_loss)
             validation_losses.append(valid_loss)   
             print('\nEpoch:',epoch, 'Train_loss: {:.2f}'.format(train_loss), 'Val_loss: {:.2f}'.format(valid_loss))
 
-            if valid_loss > prev_vl: epoch_cd += 1; print(Fore.RED + f'Uvaga! {epoch_cd} / {self._early_stopping_patience}' + Style.RESET_ALL)
+            if valid_loss > prev_vl: 
+                epoch_cd += 1
+                print(Fore.RED + f'Uvaga! {epoch_cd} / {self._early_stopping_patience}' + Style.RESET_ALL)
             else:                    epoch_cd =  0; prev_vl = valid_loss
 
-
+            if epoch_cd == 1:
+                self.save_checkpoint(666)
             if epoch_cd >= self._early_stopping_patience:
                 break
 

@@ -19,7 +19,10 @@ class ChallengeDataset(Dataset):
             self._transform = tv.transforms.Compose([
             tv.transforms.ToPILImage(),
             tv.transforms.ToTensor(),
-            tv.transforms.Normalize(train_mean, train_std)
+            tv.transforms.Normalize(train_mean, train_std),
+            # tv.transforms.RandomHorizontalFlip(),
+            # tv.transforms.RandomVerticalFlip(),
+            # tv.transforms.
         ])
         if mode == 'val':
              self._transform = tv.transforms.Compose([

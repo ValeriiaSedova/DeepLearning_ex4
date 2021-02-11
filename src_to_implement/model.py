@@ -9,7 +9,7 @@ class ResNet(torch.nn.Module):
         self.layers = [
             torch.nn.Conv2d(3, 64, 7, 2),
             torch.nn.BatchNorm2d(64),
-            torch.nn.ReLU(),
+            torch.nn.LeakyReLU(),
             torch.nn.MaxPool2d(3, 2),
             ResBlock(64, 64, 1),
             ResBlock(64, 128, 2),
@@ -18,7 +18,8 @@ class ResNet(torch.nn.Module):
             torch.nn.AdaptiveAvgPool2d((1, 1)),
             torch.nn.Flatten(),
             torch.nn.Linear(512, 2),
-            torch.nn.Sigmoid()]
+            torch.nn.Sigmoid(),
+            ]
 
         self.layers = torch.nn.ModuleList(self.layers)
 
@@ -42,10 +43,10 @@ class ResBlock(torch.nn.Module):
         self.layers =[
             torch.nn.Conv2d(input_channels, output_channels, kernel_size = 3, stride = stride, padding = 1),
             torch.nn.BatchNorm2d(output_channels),
-            torch.nn.ReLU(),
+            torch.nn.LeakyReLU(),
             torch.nn.Conv2d(output_channels, output_channels, kernel_size = 3, padding = 1),
             torch.nn.BatchNorm2d(output_channels),
-            torch.nn.ReLU()]
+            torch.nn.LeakyReLU()]
 
         self.layers = torch.nn.ModuleList(self.layers)
 
@@ -54,8 +55,7 @@ class ResBlock(torch.nn.Module):
         for i, layer in enumerate(self.layers):
             x = layer.forward(x)
             if i == 4:
-                if self.identity_downsample != None:
-                    input_tensor = self.identity_downsample(input_tensor)
+                input_tensor = self.identity_downsample(input_tensor)
                 x += input_tensor
         return x
     
